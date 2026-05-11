@@ -19,15 +19,16 @@ function Router() {
 }
 
 // NOTE: About Theme
-// - First choose a default theme according to your design style (dark or light bg), than change color palette in index.css
-//   to keep consistent foreground/background color across components
-// - If you want to make theme switchable, pass `switchable` ThemeProvider and use `useTheme` hook
+// - OohX uses dark theme by default (deep red/dark tone)
+// - Color palette configured in index.css with OKLCH colors
+// - Primary color: deep red (#dc2626)
+// - Background: very dark with red tint (#0f0a0d)
 
 function App() {
   return (
     <ErrorBoundary>
       <ThemeProvider
-        defaultTheme="light"
+        defaultTheme="dark"
         // switchable
       >
         <TooltipProvider>
