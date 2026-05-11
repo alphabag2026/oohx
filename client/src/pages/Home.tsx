@@ -55,7 +55,7 @@ export default function Home() {
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <img
-              src="/manus-storage/oohx-logo_e365d4bc.png"
+              src="/manus-storage/oohx-logo-new_cf8edb3e.png"
               alt="OohX Logo"
               className="w-8 h-8 rounded-full object-cover"
             />
@@ -169,14 +169,15 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Hero Image Placeholder */}
-          <div className="mt-16 relative">
-            <div className="aspect-video rounded-2xl bg-gradient-to-br from-red-900/40 to-black/60 border border-red-500/30 flex items-center justify-center overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
-              <div className="relative z-10 text-center">
-                <Heart className="w-24 h-24 mx-auto mb-4 text-red-500 opacity-50" />
-                <p className="text-gray-400">AI 파트너 데이팅 경험</p>
-              </div>
+          {/* Hero Logo Image */}
+          <div className="mt-16 relative flex justify-center">
+            <div className="relative w-72 md:w-96">
+              <div className="absolute inset-0 bg-red-600/20 rounded-3xl blur-3xl"></div>
+              <img
+                src="/manus-storage/oohx-logo-new_cf8edb3e.png"
+                alt="OohX.ai"
+                className="relative z-10 w-full rounded-3xl shadow-2xl shadow-red-900/50"
+              />
             </div>
           </div>
         </div>
@@ -325,9 +326,9 @@ export default function Home() {
 
             <div className="relative">
               <img
-                src="/manus-storage/oohx-logo_e365d4bc.png"
+                src="/manus-storage/oohx-logo-new_cf8edb3e.png"
                 alt="OohX Logo"
-                className="w-full max-w-sm mx-auto rounded-2xl shadow-2xl"
+                className="w-full max-w-sm mx-auto rounded-2xl shadow-2xl shadow-red-900/50"
               />
             </div>
           </div>
@@ -443,9 +444,11 @@ export default function Home() {
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
               <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-red-600 to-red-700 flex items-center justify-center">
-                  <span className="text-white font-bold">O</span>
-                </div>
+                <img
+                  src="/manus-storage/oohx-logo-new_cf8edb3e.png"
+                  alt="OohX Logo"
+                  className="w-8 h-8 rounded-full object-cover"
+                />
                 <span className="font-bold">OohX.ai</span>
               </div>
               <p className="text-sm text-gray-500">
