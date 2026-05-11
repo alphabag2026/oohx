@@ -55,7 +55,7 @@ export default function Home() {
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <img
-              src="/manus-storage/oohx-logo-new_cf8edb3e.png"
+              src="/oohx-logo.png"
               alt="OohX Logo"
               className="w-8 h-8 rounded-full object-cover"
             />
@@ -174,7 +174,7 @@ export default function Home() {
             <div className="relative w-72 md:w-96">
               <div className="absolute inset-0 bg-red-600/20 rounded-3xl blur-3xl"></div>
               <img
-                src="/manus-storage/oohx-logo-new_cf8edb3e.png"
+                src="/oohx-logo.png"
                 alt="OohX.ai"
                 className="relative z-10 w-full rounded-3xl shadow-2xl shadow-red-900/50"
               />
@@ -326,7 +326,7 @@ export default function Home() {
 
             <div className="relative">
               <img
-                src="/manus-storage/oohx-logo-new_cf8edb3e.png"
+                src="/oohx-logo.png"
                 alt="OohX Logo"
                 className="w-full max-w-sm mx-auto rounded-2xl shadow-2xl shadow-red-900/50"
               />
@@ -445,7 +445,7 @@ export default function Home() {
             <div>
               <div className="flex items-center gap-2 mb-4">
                 <img
-                  src="/manus-storage/oohx-logo-new_cf8edb3e.png"
+                  src="/oohx-logo.png"
                   alt="OohX Logo"
                   className="w-8 h-8 rounded-full object-cover"
                 />
