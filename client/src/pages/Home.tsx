@@ -1,6 +1,9 @@
+import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { ChevronRight, Heart, Zap, Users, Lock, Sparkles } from "lucide-react";
+import { getLoginUrl } from "@/const";
+import { ChevronRight, Heart, Zap, Users, Lock, Sparkles, LogIn, LogOut, User } from "lucide-react";
 import { useState } from "react";
+import { Link } from "wouter";
 
 /**
  * OohX Landing Page
@@ -10,38 +13,104 @@ import { useState } from "react";
  * - Sophisticated and intimate atmosphere
  * - Focus on influencer authenticity and AI innovation
  */
-
 export default function Home() {
-  const [activeTab, setActiveTab] = useState("dating");
+  const { user, loading, isAuthenticated, logout } = useAuth();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const creators = [
+    {
+      id: 1,
+      img: "https://d2xsxph8kpxj0f.cloudfront.net/310519663373200888/momaTHZCdn4B5vKDmtkdXn/creator-profile-1-BHLVrRATuQhehhX8Mr5y7P.webp",
+      name: "Luna",
+      price: "₩9,900/월",
+      category: "소통 & 데이팅",
+    },
+    {
+      id: 2,
+      img: "https://d2xsxph8kpxj0f.cloudfront.net/310519663373200888/momaTHZCdn4B5vKDmtkdXn/creator-profile-2-Wb9NAbjCapqXzwZoMwDUV9.webp",
+      name: "Alex",
+      price: "₩12,900/월",
+      category: "프리미엄",
+    },
+    {
+      id: 3,
+      img: "https://d2xsxph8kpxj0f.cloudfront.net/310519663373200888/momaTHZCdn4B5vKDmtkdXn/creator-profile-3-DP5xTQFjnZwKdq5wZNkrHC.webp",
+      name: "Sophia",
+      price: "₩14,900/월",
+      category: "VIP",
+    },
+    {
+      id: 4,
+      img: "https://d2xsxph8kpxj0f.cloudfront.net/310519663373200888/momaTHZCdn4B5vKDmtkdXn/creator-profile-4-mXFdyb5gxiBMRNTpqDjcvC.webp",
+      name: "James",
+      price: "₩11,900/월",
+      category: "소통 & 데이팅",
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-red-950 to-slate-950 text-white overflow-hidden">
       {/* Navigation */}
       <nav className="fixed top-0 w-full z-50 bg-black/40 backdrop-blur-md border-b border-red-900/30">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center">
-              <span className="text-white font-bold text-lg">O</span>
-            </div>
+            <img
+              src="/manus-storage/oohx-logo_e365d4bc.png"
+              alt="OohX Logo"
+              className="w-8 h-8 rounded-full object-cover"
+            />
             <span className="text-xl font-bold bg-gradient-to-r from-red-400 to-pink-400 bg-clip-text text-transparent">
               OohX.ai
             </span>
           </div>
-          <div className="hidden md:flex gap-8">
-            <a href="#features" className="hover:text-red-400 transition">
+          <div className="hidden md:flex gap-8 items-center">
+            <a href="#features" className="text-gray-300 hover:text-red-400 transition text-sm">
               기능
             </a>
-            <a href="#creators" className="hover:text-red-400 transition">
+            <a href="#creators" className="text-gray-300 hover:text-red-400 transition text-sm">
               크리에이터
             </a>
-            <a href="#faq" className="hover:text-red-400 transition">
+            <a href="#faq" className="text-gray-300 hover:text-red-400 transition text-sm">
               FAQ
             </a>
           </div>
-          <Button className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 border-0">
-            시작하기
-            <ChevronRight className="w-4 h-4 ml-2" />
-          </Button>
+          <div className="flex items-center gap-3">
+            {loading ? (
+              <div className="w-8 h-8 rounded-full bg-red-900/30 animate-pulse" />
+            ) : isAuthenticated && user ? (
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 text-sm text-gray-300">
+                  <User className="w-4 h-4 text-red-400" />
+                  <span className="hidden md:inline">{user.name || "사용자"}</span>
+                </div>
+                <Button
+                  onClick={() => logout()}
+                  variant="outline"
+                  size="sm"
+                  className="border-red-500/50 text-red-300 hover:bg-red-900/20 text-xs"
+                >
+                  <LogOut className="w-3 h-3 mr-1" />
+                  로그아웃
+                </Button>
+              </div>
+            ) : (
+              <Button
+                onClick={() => (window.location.href = getLoginUrl())}
+                className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 border-0 text-sm"
+                size="sm"
+              >
+                <LogIn className="w-3 h-3 mr-1" />
+                로그인
+              </Button>
+            )}
+            <Button
+              className="hidden md:flex bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 border-0 text-sm"
+              size="sm"
+            >
+              시작하기
+              <ChevronRight className="w-3 h-3 ml-1" />
+            </Button>
+          </div>
         </div>
       </nav>
 
@@ -53,7 +122,7 @@ export default function Home() {
           <div className="absolute bottom-20 right-1/4 w-96 h-96 bg-pink-600/20 rounded-full blur-3xl"></div>
         </div>
 
-        <div className="container mx-auto max-w-4xl">
+        <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
             <div className="inline-block mb-6">
               <span className="px-4 py-2 rounded-full bg-red-900/30 border border-red-500/50 text-red-300 text-sm font-medium">
@@ -76,13 +145,24 @@ export default function Home() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 border-0 px-8 py-6 text-lg">
-                지금 시작하기
-                <ChevronRight className="w-5 h-5 ml-2" />
-              </Button>
+              {isAuthenticated ? (
+                <Button className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 border-0 px-8 py-6 text-lg">
+                  크리에이터 탐색하기
+                  <ChevronRight className="w-5 h-5 ml-2" />
+                </Button>
+              ) : (
+                <Button
+                  onClick={() => (window.location.href = getLoginUrl())}
+                  className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 border-0 px-8 py-6 text-lg"
+                >
+                  지금 시작하기
+                  <ChevronRight className="w-5 h-5 ml-2" />
+                </Button>
+              )}
               <Button
                 variant="outline"
-                className="border-red-500/50 text-red-300 hover:bg-red-900/20 px-8 py-6 text-lg"
+                className="border-red-500/50 text-red-300 hover:bg-red-900/20 bg-transparent px-8 py-6 text-lg"
+                onClick={() => document.getElementById("features")?.scrollIntoView({ behavior: "smooth" })}
               >
                 더 알아보기
               </Button>
@@ -104,7 +184,7 @@ export default function Home() {
 
       {/* Features Section */}
       <section id="features" className="py-20 px-4 bg-black/30">
-        <div className="container mx-auto max-w-5xl">
+        <div className="max-w-5xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
               OohX의 특별한 기능
@@ -124,7 +204,7 @@ export default function Home() {
               <p className="text-gray-400 mb-4">
                 유명 크리에이터의 초상권으로 만든 AI 파트너. 현실의 얼굴, 가상의 완벽한 파트너
               </p>
-              <a href="#" className="text-red-400 hover:text-red-300 flex items-center gap-2">
+              <a href="#creators" className="text-red-400 hover:text-red-300 flex items-center gap-2 text-sm">
                 자세히 보기
                 <ChevronRight className="w-4 h-4" />
               </a>
@@ -139,7 +219,7 @@ export default function Home() {
               <p className="text-gray-400 mb-4">
                 영상 섹스, 3D 섹스, 음성 통화 등 다양한 성인 콘텐츠. 구매 또는 임대 선택 가능
               </p>
-              <a href="#" className="text-red-400 hover:text-red-300 flex items-center gap-2">
+              <a href="#" className="text-red-400 hover:text-red-300 flex items-center gap-2 text-sm">
                 자세히 보기
                 <ChevronRight className="w-4 h-4" />
               </a>
@@ -154,7 +234,7 @@ export default function Home() {
               <p className="text-gray-400 mb-4">
                 당신만의 특별한 AI 파트너와 혼자만의 시간. 완벽한 프라이버시 보장
               </p>
-              <a href="#" className="text-red-400 hover:text-red-300 flex items-center gap-2">
+              <a href="#" className="text-red-400 hover:text-red-300 flex items-center gap-2 text-sm">
                 자세히 보기
                 <ChevronRight className="w-4 h-4" />
               </a>
@@ -164,8 +244,8 @@ export default function Home() {
       </section>
 
       {/* Creator Gallery Section */}
-      <section className="py-20 px-4 bg-black/30">
-        <div className="container mx-auto max-w-6xl">
+      <section id="creators" className="py-20 px-4">
+        <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
               OohX의 크리에이터
@@ -176,24 +256,22 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
-            {[
-              { img: "https://d2xsxph8kpxj0f.cloudfront.net/310519663373200888/momaTHZCdn4B5vKDmtkdXn/creator-profile-1-BHLVrRATuQhehhX8Mr5y7P.webp", name: "Luna", price: "₩9,900/월" },
-              { img: "https://d2xsxph8kpxj0f.cloudfront.net/310519663373200888/momaTHZCdn4B5vKDmtkdXn/creator-profile-2-Wb9NAbjCapqXzwZoMwDUV9.webp", name: "Alex", price: "₩12,900/월" },
-              { img: "https://d2xsxph8kpxj0f.cloudfront.net/310519663373200888/momaTHZCdn4B5vKDmtkdXn/creator-profile-3-DP5xTQFjnZwKdq5wZNkrHC.webp", name: "Sophia", price: "₩14,900/월" },
-              { img: "https://d2xsxph8kpxj0f.cloudfront.net/310519663373200888/momaTHZCdn4B5vKDmtkdXn/creator-profile-4-mXFdyb5gxiBMRNTpqDjcvC.webp", name: "James", price: "₩11,900/월" },
-            ].map((creator, idx) => (
-              <div key={idx} className="group relative overflow-hidden rounded-xl">
+            {creators.map((creator) => (
+              <div key={creator.id} className="group relative overflow-hidden rounded-xl cursor-pointer">
                 <img
                   src={creator.img}
                   alt={creator.name}
                   className="w-full h-64 object-cover group-hover:scale-110 transition duration-300"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition flex flex-col justify-end p-4">
+                  <span className="text-xs text-red-400 mb-1">{creator.category}</span>
                   <h3 className="text-xl font-bold mb-1">{creator.name}</h3>
                   <p className="text-red-400 text-sm mb-3">{creator.price}</p>
-                  <Button className="w-full bg-red-600 hover:bg-red-700 text-white border-0 text-sm py-2">
-                    프로필 보기
-                  </Button>
+                  <Link href={`/creator/${creator.id}`}>
+                    <Button className="w-full bg-red-600 hover:bg-red-700 text-white border-0 text-sm py-2">
+                      프로필 보기
+                    </Button>
+                  </Link>
                 </div>
               </div>
             ))}
@@ -209,8 +287,8 @@ export default function Home() {
       </section>
 
       {/* Creator Benefits Section */}
-      <section id="creators" className="py-20 px-4">
-        <div className="container mx-auto max-w-5xl">
+      <section className="py-20 px-4 bg-black/30">
+        <div className="max-w-5xl mx-auto">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
               <h2 className="text-4xl font-bold mb-6">
@@ -257,8 +335,8 @@ export default function Home() {
       </section>
 
       {/* How It Works Section */}
-      <section className="py-20 px-4 bg-black/30">
-        <div className="container mx-auto max-w-5xl">
+      <section className="py-20 px-4">
+        <div className="max-w-5xl mx-auto">
           <h2 className="text-4xl font-bold text-center mb-16">
             OohX는 어떻게 작동하나요?
           </h2>
@@ -288,8 +366,8 @@ export default function Home() {
       </section>
 
       {/* FAQ Section */}
-      <section id="faq" className="py-20 px-4">
-        <div className="container mx-auto max-w-3xl">
+      <section id="faq" className="py-20 px-4 bg-black/30">
+        <div className="max-w-3xl mx-auto">
           <h2 className="text-4xl font-bold text-center mb-16">
             자주 묻는 질문
           </h2>
@@ -327,7 +405,7 @@ export default function Home() {
 
       {/* CTA Section */}
       <section className="py-20 px-4 bg-gradient-to-r from-red-900/30 to-black/30 border-t border-red-500/30">
-        <div className="container mx-auto max-w-3xl text-center">
+        <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-4xl font-bold mb-6">
             당신의 특별한 경험을 시작하세요
           </h2>
@@ -335,13 +413,23 @@ export default function Home() {
             OohX에서 현실과 가상의 경계를 넘어 새로운 관계를 경험하세요
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 border-0 px-8 py-6 text-lg">
-              지금 시작하기
-              <ChevronRight className="w-5 h-5 ml-2" />
-            </Button>
+            {isAuthenticated ? (
+              <Button className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 border-0 px-8 py-6 text-lg">
+                크리에이터 탐색하기
+                <ChevronRight className="w-5 h-5 ml-2" />
+              </Button>
+            ) : (
+              <Button
+                onClick={() => (window.location.href = getLoginUrl())}
+                className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 border-0 px-8 py-6 text-lg"
+              >
+                지금 시작하기
+                <ChevronRight className="w-5 h-5 ml-2" />
+              </Button>
+            )}
             <Button
               variant="outline"
-              className="border-red-500/50 text-red-300 hover:bg-red-900/20 px-8 py-6 text-lg"
+              className="border-red-500/50 text-red-300 hover:bg-red-900/20 bg-transparent px-8 py-6 text-lg"
             >
               크리에이터 등록
             </Button>
@@ -351,7 +439,7 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="py-12 px-4 border-t border-red-500/30 bg-black/50">
-        <div className="container mx-auto max-w-5xl">
+        <div className="max-w-5xl mx-auto">
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
               <div className="flex items-center gap-2 mb-4">
