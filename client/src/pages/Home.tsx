@@ -163,6 +163,51 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Creator Gallery Section */}
+      <section className="py-20 px-4 bg-black/30">
+        <div className="container mx-auto max-w-6xl">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">
+              OohX의 크리에이터
+            </h2>
+            <p className="text-xl text-gray-400">
+              실존하는 인플루언서와 함께하는 특별한 경험
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
+            {[
+              { img: "https://d2xsxph8kpxj0f.cloudfront.net/310519663373200888/momaTHZCdn4B5vKDmtkdXn/creator-profile-1-BHLVrRATuQhehhX8Mr5y7P.webp", name: "Luna", price: "₩9,900/월" },
+              { img: "https://d2xsxph8kpxj0f.cloudfront.net/310519663373200888/momaTHZCdn4B5vKDmtkdXn/creator-profile-2-Wb9NAbjCapqXzwZoMwDUV9.webp", name: "Alex", price: "₩12,900/월" },
+              { img: "https://d2xsxph8kpxj0f.cloudfront.net/310519663373200888/momaTHZCdn4B5vKDmtkdXn/creator-profile-3-DP5xTQFjnZwKdq5wZNkrHC.webp", name: "Sophia", price: "₩14,900/월" },
+              { img: "https://d2xsxph8kpxj0f.cloudfront.net/310519663373200888/momaTHZCdn4B5vKDmtkdXn/creator-profile-4-mXFdyb5gxiBMRNTpqDjcvC.webp", name: "James", price: "₩11,900/월" },
+            ].map((creator, idx) => (
+              <div key={idx} className="group relative overflow-hidden rounded-xl">
+                <img
+                  src={creator.img}
+                  alt={creator.name}
+                  className="w-full h-64 object-cover group-hover:scale-110 transition duration-300"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition flex flex-col justify-end p-4">
+                  <h3 className="text-xl font-bold mb-1">{creator.name}</h3>
+                  <p className="text-red-400 text-sm mb-3">{creator.price}</p>
+                  <Button className="w-full bg-red-600 hover:bg-red-700 text-white border-0 text-sm py-2">
+                    프로필 보기
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="text-center">
+            <Button className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 border-0 px-8 py-6">
+              모든 크리에이터 보기
+              <ChevronRight className="w-4 h-4 ml-2" />
+            </Button>
+          </div>
+        </div>
+      </section>
+
       {/* Creator Benefits Section */}
       <section id="creators" className="py-20 px-4">
         <div className="container mx-auto max-w-5xl">
@@ -201,13 +246,11 @@ export default function Home() {
             </div>
 
             <div className="relative">
-              <div className="aspect-square rounded-2xl bg-gradient-to-br from-red-900/40 to-black/60 border border-red-500/30 flex items-center justify-center overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
-                <div className="relative z-10 text-center">
-                  <Users className="w-24 h-24 mx-auto mb-4 text-red-500 opacity-50" />
-                  <p className="text-gray-400">크리에이터 프로필</p>
-                </div>
-              </div>
+              <img
+                src="/manus-storage/oohx-logo_e365d4bc.png"
+                alt="OohX Logo"
+                className="w-full max-w-sm mx-auto rounded-2xl shadow-2xl"
+              />
             </div>
           </div>
         </div>
