@@ -390,8 +390,21 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="border-t border-red-500/30 pt-8 text-center text-sm text-gray-500">
-            <p>© 2026 OohX.ai. 모든 권리 보유. 18세 이상만 이용 가능합니다.</p>
+          <div className="border-t border-red-500/30 pt-8">
+            <div className="mb-6 p-4 bg-gradient-to-r from-red-900/30 to-black/30 rounded-lg border border-red-500/30">
+              <h3 className="font-bold mb-3 text-red-400">토큰 연계</h3>
+              <p className="text-sm text-gray-300 mb-4">
+                암호화폐 지갑을 연결하여 OohX 토큰으로 프리미엄 콘텐츠를 구매하고, 크리에이터 초상권 수익을 받으세요.
+              </p>
+              <Button className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 border-0 px-6 py-2 text-sm">
+                지갑 연결하기
+              </Button>
+            </div>
+            
+            <div className="text-center text-sm text-gray-500">
+              <p className="mb-2">© 2026 OohX.ai. 모든 권리 보유. 18세 이상만 이용 가능합니다.</p>
+              <p className="text-xs text-gray-600">🚀 <span className="text-red-400 font-semibold">Xplay AI</span>로 제작되었습니다</p>
+            </div>
           </div>
         </div>
       </footer>
