@@ -1,33 +1,70 @@
+import "dotenv/config";
 import express from "express";
 import { createServer } from "http";
-import path from "path";
-import { fileURLToPath } from "url";
+import net from "net";
+import { createExpressMiddleware } from "@trpc/server/adapters/express";
+import { registerOAuthRoutes } from "./_core/oauth";
+import { registerStorageProxy } from "./_core/storageProxy";
+import { appRouter } from "./routers";
+import { createContext } from "./_core/context";
+import { serveStatic, setupVite } from "./_core/vite";
+import { ENV } from "./_core/env";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+function isPortAvailable(port: number): Promise<boolean> {
+  return new Promise(resolve => {
+    const server = net.createServer();
+    server.listen(port, () => {
+      server.close(() => resolve(true));
+    });
+    server.on("error", () => resolve(false));
+  });
+}
+
+async function findAvailablePort(startPort: number = 3000): Promise<number> {
+  for (let port = startPort; port < startPort + 20; port++) {
+    if (await isPortAvailable(port)) {
+      return port;
+    }
+  }
+  throw new Error(`No available port found starting from ${startPort}`);
+}
 
 async function startServer() {
   const app = express();
   const server = createServer(app);
 
-  // Serve static files from dist/public in production
-  const staticPath =
-    process.env.NODE_ENV === "production"
-      ? path.resolve(__dirname, "public")
-      : path.resolve(__dirname, "..", "dist", "public");
+  app.use(express.json({ limit: "50mb" }));
+  app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
-  app.use(express.static(staticPath));
+  registerStorageProxy(app);
+  registerOAuthRoutes(app);
 
-  // Handle client-side routing - serve index.html for all routes
-  app.get("*", (_req, res) => {
-    res.sendFile(path.join(staticPath, "index.html"));
-  });
+  app.use(
+    "/api/trpc",
+    createExpressMiddleware({
+      router: appRouter,
+      createContext,
+    })
+  );
 
-  const port = process.env.PORT || 3000;
+  if (ENV.isDevelopment) {
+    await setupVite(app, server);
+  } else {
+    serveStatic(app);
+  }
+
+  const port = await findAvailablePort(ENV.port);
+
+  if (port !== ENV.port) {
+    console.log(`Port ${ENV.port} is busy, using port ${port} instead`);
+  }
 
   server.listen(port, () => {
     console.log(`Server running on http://localhost:${port}/`);
   });
 }
 
-startServer().catch(console.error);
+startServer().catch(error => {
+  console.error(error);
+  process.exitCode = 1;
+});
