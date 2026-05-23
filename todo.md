@@ -30,8 +30,8 @@
 
 ## Promptchan API 연동
 
-- [ ] PROMPTCHAN_API_KEY 환경변수 설정
-- [ ] 백엔드 tRPC 라우터에 AI 이미지 생성 API 추가
-- [ ] 프론트엔드 AI 이미지 생성 페이지 구현 (/ai-generate)
-- [ ] AWS 서버 배포
-- [ ] GitHub 업로드
+- [x] PROMPTCHAN_API_KEY 환경변수 설정
+- [x] 백엔드 tRPC 라우터에 AI 이미지 생성 API 추가
+- [x] 프론트엔드 AI 이미지 생성 페이지 구현 (/ai-generate)
+- [x] AWS 서버 배포
+- [x] GitHub 업로드
