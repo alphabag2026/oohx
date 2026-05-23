@@ -27,3 +27,11 @@
 - [ ] 결제 시스템 연동 (추후 진행)
 - [ ] 크리에이터 어드민 관리 페이지
 - [ ] 실제 채팅 기능 연동 (AI 모델 서버)
+
+## Promptchan API 연동
+
+- [ ] PROMPTCHAN_API_KEY 환경변수 설정
+- [ ] 백엔드 tRPC 라우터에 AI 이미지 생성 API 추가
+- [ ] 프론트엔드 AI 이미지 생성 페이지 구현 (/ai-generate)
+- [ ] AWS 서버 배포
+- [ ] GitHub 업로드

@@ -81,6 +81,10 @@ export default function Home() {
             <a href="#faq" className="text-gray-300 hover:text-red-400 transition text-sm">
               {t.nav.faq}
             </a>
+            <Link href="/ai-generate" className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-red-600/30 to-pink-600/30 border border-red-500/40 text-red-300 hover:from-red-600/50 hover:to-pink-600/50 transition text-sm font-medium">
+              <Sparkles className="w-3.5 h-3.5" />
+              AI 생성
+            </Link>
           </div>
           <div className="flex items-center gap-3">
             {/* Language Switcher */}
