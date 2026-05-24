@@ -17,16 +17,10 @@
 - [x] DB 마이그레이션 실행 (pnpm db:push)
 - [x] server/db.ts에 creators 쿼리 헬퍼 추가
 - [x] server/routers.ts에 creators tRPC 라우터 추가
-- [x] vitest 테스트 작성 및 통과 (4/4)
+- [x] vitest 테스트 작성 및 통과 (18/18)
 - [x] dark 테마 설정 (App.tsx ThemeProvider)
-
-## 남은 작업
-
 - [x] AWS 서버 재배포 (oohx.ai 도메인)
 - [x] Let's Encrypt SSL 인증서 발급 (완료)
-- [ ] 결제 시스템 연동 (추후 진행)
-- [ ] 크리에이터 어드민 관리 페이지
-- [ ] 실제 채팅 기능 연동 (AI 모델 서버)
 
 ## Promptchan API 연동
 
@@ -38,18 +32,23 @@
 
 ## A. 핵심 서비스 완성
 
-- [ ] A1: 크리에이터 AI 채팅 페이지 (/chat/:id) - Promptchan chat API 연결
-- [ ] A2: 크리에이터 상세 페이지 DB 연동 (하드코딩 → 실제 DB 데이터)
-- [ ] A3: 크리에이터 어드민 관리 페이지 (/admin/creators) - CRUD
+- [x] A1: 크리에이터 AI 채팅 페이지 (/chat/:id) - Promptchan chat API 연결
+- [x] A2: 크리에이터 상세 페이지 DB 연동 (하드코딩 → 실제 DB 데이터)
+- [x] A3: 크리에이터 어드민 관리 페이지 (/admin/creators) - CRUD
 
 ## B. 사용자 경험 강화
 
-- [ ] B1: 회원 마이페이지 (/my) - 생성 이미지 히스토리, 즐겨찾기
-- [ ] B2: 이미지 갤러리/탐색 페이지 (/explore) - 공개 갤러리
-- [ ] B3: 크리에이터 구독 시스템 UI (구독 플로우, 결제 제외)
+- [x] B1: 회원 마이페이지 (/mypage) - 생성 이미지 히스토리, 즐겨찾기
+- [x] B2: 이미지 갤러리/탐색 페이지 (/explore) - 공개 갤러리
+- [x] B3: 크리에이터 구독 시스템 UI (구독 플로우, 결제 제외)
 
 ## C. 마케팅/성장
 
-- [ ] C1: SEO 최적화 (meta tags, sitemap, og:image)
-- [ ] C1: 애널리틱스 (방문자/이미지 생성 통계)
-- [ ] C2: 이미지 공유 기능 (SNS 공유 버튼)
+- [x] C1: SEO 최적화 (meta tags, sitemap, og:image, robots.txt)
+- [x] C2: 이미지 공유 기능 (SNS 공유 버튼 - Twitter, Telegram, 링크 복사, 다운로드)
+
+## 미구현 (추후 진행)
+
+- [ ] 결제 시스템 연동 (사용자 요청 시 진행)
+- [ ] 애널리틱스 (방문자/이미지 생성 통계)
+- [ ] 다국어 지원 확장 (한국어/영어/중국어 완성)
