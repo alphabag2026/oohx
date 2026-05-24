@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { getLoginUrl } from "@/const";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { languages } from "@/lib/i18n";
+import { trpc } from "@/lib/trpc";
 import { ChevronRight, Zap, Users, Lock, Sparkles, LogIn, LogOut, User, Globe } from "lucide-react";
 import { useState } from "react";
 import { Link } from "wouter";
@@ -21,36 +22,15 @@ export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [langMenuOpen, setLangMenuOpen] = useState(false);
 
-  const creators = [
-    {
-      id: 1,
-      img: "https://d2xsxph8kpxj0f.cloudfront.net/310519663373200888/momaTHZCdn4B5vKDmtkdXn/creator-profile-1-BHLVrRATuQhehhX8Mr5y7P.webp",
-      name: "Luna",
-      price: lang === "ko" ? "₩9,900/월" : lang === "zh" ? "₩9,900/月" : "₩9,900/mo",
-      category: lang === "ko" ? "소통 & 데이팅" : lang === "zh" ? "交流 & 约会" : "Chat & Dating",
-    },
-    {
-      id: 2,
-      img: "https://d2xsxph8kpxj0f.cloudfront.net/310519663373200888/momaTHZCdn4B5vKDmtkdXn/creator-profile-2-Wb9NAbjCapqXzwZoMwDUV9.webp",
-      name: "Alex",
-      price: lang === "ko" ? "₩12,900/월" : lang === "zh" ? "₩12,900/月" : "₩12,900/mo",
-      category: lang === "ko" ? "프리미엄" : lang === "zh" ? "高级" : "Premium",
-    },
-    {
-      id: 3,
-      img: "https://d2xsxph8kpxj0f.cloudfront.net/310519663373200888/momaTHZCdn4B5vKDmtkdXn/creator-profile-3-DP5xTQFjnZwKdq5wZNkrHC.webp",
-      name: "Sophia",
-      price: lang === "ko" ? "₩14,900/월" : lang === "zh" ? "₩14,900/月" : "₩14,900/mo",
-      category: "VIP",
-    },
-    {
-      id: 4,
-      img: "https://d2xsxph8kpxj0f.cloudfront.net/310519663373200888/momaTHZCdn4B5vKDmtkdXn/creator-profile-4-mXFdyb5gxiBMRNTpqDjcvC.webp",
-      name: "James",
-      price: lang === "ko" ? "₩11,900/월" : lang === "zh" ? "₩11,900/月" : "₩11,900/mo",
-      category: lang === "ko" ? "소통 & 데이팅" : lang === "zh" ? "交流 & 约会" : "Chat & Dating",
-    },
-  ];
+  // Fetch creators from DB
+  const { data: creatorsData } = trpc.creators.list.useQuery();
+  const creators = (creatorsData || []).map((c) => ({
+    id: c.id,
+    img: c.imageUrl,
+    name: c.name,
+    price: c.price,
+    category: c.category || "AI 파트너",
+  }));
 
   const featureIcons = [<Users className="w-6 h-6" />, <Zap className="w-6 h-6" />, <Lock className="w-6 h-6" />];
 
@@ -81,6 +61,9 @@ export default function Home() {
             <a href="#faq" className="text-gray-300 hover:text-red-400 transition text-sm">
               {t.nav.faq}
             </a>
+            <Link href="/explore" className="text-gray-300 hover:text-red-400 transition text-sm">
+              갤러리
+            </Link>
             <Link href="/ai-generate" className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-red-600/30 to-pink-600/30 border border-red-500/40 text-red-300 hover:from-red-600/50 hover:to-pink-600/50 transition text-sm font-medium">
               <Sparkles className="w-3.5 h-3.5" />
               AI 생성
@@ -116,10 +99,10 @@ export default function Home() {
               <div className="w-8 h-8 rounded-full bg-red-900/30 animate-pulse" />
             ) : isAuthenticated && user ? (
               <div className="flex items-center gap-3">
-                <div className="flex items-center gap-2 text-sm text-gray-300">
+                <Link href="/my" className="flex items-center gap-2 text-sm text-gray-300 hover:text-red-400 transition">
                   <User className="w-4 h-4 text-red-400" />
                   <span className="hidden md:inline">{user.name || "사용자"}</span>
-                </div>
+                </Link>
                 <Button
                   onClick={() => logout()}
                   variant="outline"

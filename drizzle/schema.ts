@@ -45,3 +45,48 @@ export const creators = mysqlTable("creators", {
 
 export type Creator = typeof creators.$inferSelect;
 export type InsertCreator = typeof creators.$inferInsert;
+
+/**
+ * Chat sessions - AI 채팅 세션
+ */
+export const chatSessions = mysqlTable("chatSessions", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  creatorId: int("creatorId").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type ChatSession = typeof chatSessions.$inferSelect;
+export type InsertChatSession = typeof chatSessions.$inferInsert;
+
+/**
+ * Chat messages - 채팅 메시지
+ */
+export const chatMessages = mysqlTable("chatMessages", {
+  id: int("id").autoincrement().primaryKey(),
+  sessionId: int("sessionId").notNull(),
+  role: mysqlEnum("role", ["user", "assistant"]).notNull(),
+  content: text("content").notNull(),
+  selfieUrl: text("selfieUrl"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type ChatMessage = typeof chatMessages.$inferSelect;
+export type InsertChatMessage = typeof chatMessages.$inferInsert;
+
+/**
+ * Generated images - AI 이미지 생성 히스토리
+ */
+export const generatedImages = mysqlTable("generatedImages", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId"),
+  prompt: text("prompt").notNull(),
+  style: varchar("style", { length: 50 }),
+  imageUrl: text("imageUrl").notNull(),
+  isPublic: boolean("isPublic").default(false),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type GeneratedImage = typeof generatedImages.$inferSelect;
+export type InsertGeneratedImage = typeof generatedImages.$inferInsert;

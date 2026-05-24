@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
+import ShareImageModal from "@/components/ShareImageModal";
 import { Link } from "wouter";
 import {
-  Sparkles, Download, RefreshCw, ArrowLeft, Wand2, Image as ImageIcon, Loader2
+  Sparkles, Download, RefreshCw, ArrowLeft, Wand2, Image as ImageIcon, Loader2, Share2
 } from "lucide-react";
 
 const STYLES = [
@@ -46,6 +47,7 @@ export default function AIGenerate() {
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const [gemsRemaining, setGemsRemaining] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [shareModalOpen, setShareModalOpen] = useState(false);
 
   const generateMutation = trpc.ai.generateImage.useMutation({
     onSuccess: (data) => {
@@ -325,7 +327,7 @@ export default function AIGenerate() {
                         className="w-full h-full object-contain"
                       />
                     </div>
-                    <div className="p-4 border-t border-red-900/30 flex gap-3">
+                    <div className="p-4 border-t border-red-900/30 flex gap-2">
                       <Button
                         onClick={handleDownload}
                         variant="outline"
@@ -333,6 +335,14 @@ export default function AIGenerate() {
                       >
                         <Download className="w-4 h-4 mr-2" />
                         다운로드
+                      </Button>
+                      <Button
+                        onClick={() => setShareModalOpen(true)}
+                        variant="outline"
+                        className="flex-1 border-red-500/50 text-red-300 hover:bg-red-900/20"
+                      >
+                        <Share2 className="w-4 h-4 mr-2" />
+                        공유
                       </Button>
                       <Button
                         onClick={handleGenerate}
@@ -374,6 +384,15 @@ export default function AIGenerate() {
           </div>
         </div>
       </div>
+      {/* Share Modal */}
+      {generatedImage && (
+        <ShareImageModal
+          isOpen={shareModalOpen}
+          onClose={() => setShareModalOpen(false)}
+          imageUrl={generatedImage}
+          prompt={prompt}
+        />
+      )}
     </div>
   );
 }

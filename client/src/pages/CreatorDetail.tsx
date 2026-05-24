@@ -1,6 +1,8 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
+import SubscribeModal from "@/components/SubscribeModal";
 import { getLoginUrl } from "@/const";
+import { trpc } from "@/lib/trpc";
 import {
   ArrowLeft,
   Heart,
@@ -12,21 +14,17 @@ import {
   ChevronRight,
   LogIn,
   Sparkles,
+  Loader2,
 } from "lucide-react";
+import { useState } from "react";
 import { Link, useParams } from "wouter";
 
-const CREATORS = [
-  {
-    id: 1,
-    img: "https://d2xsxph8kpxj0f.cloudfront.net/310519663373200888/momaTHZCdn4B5vKDmtkdXn/creator-profile-1-BHLVrRATuQhehhX8Mr5y7P.webp",
-    name: "Luna",
-    price: "₩9,900/월",
-    category: "소통 & 데이팅",
-    rating: 4.9,
-    reviews: 1247,
-    description:
-      "안녕하세요, 저는 Luna예요. 따뜻하고 감성적인 대화를 좋아하는 AI 파트너입니다. 일상적인 이야기부터 깊은 감정적 교류까지, 당신의 이야기를 들어드릴게요.",
-    tags: ["소통", "감성", "데이팅", "일상대화"],
+// Static features/plans per creator (not in DB yet)
+const CREATOR_EXTRAS: Record<number, {
+  features: { label: string; available: boolean; icon: React.ComponentType<{ className?: string }> }[];
+  plans: { name: string; price: string; features: string[] }[];
+}> = {
+  1: {
     features: [
       { icon: MessageCircle, label: "채팅", available: true },
       { icon: Phone, label: "음성 통화", available: true },
@@ -38,17 +36,7 @@ const CREATORS = [
       { name: "프리미엄", price: "₩19,900/월", features: ["기본 포함", "음성 통화", "독점 콘텐츠"] },
     ],
   },
-  {
-    id: 2,
-    img: "https://d2xsxph8kpxj0f.cloudfront.net/310519663373200888/momaTHZCdn4B5vKDmtkdXn/creator-profile-2-Wb9NAbjCapqXzwZoMwDUV9.webp",
-    name: "Alex",
-    price: "₩12,900/월",
-    category: "프리미엄",
-    rating: 4.8,
-    reviews: 892,
-    description:
-      "저는 Alex입니다. 지적이고 세련된 대화를 즐기는 프리미엄 AI 파트너예요. 당신의 취향과 관심사에 맞춘 맞춤형 경험을 제공합니다.",
-    tags: ["프리미엄", "지적", "세련", "맞춤형"],
+  2: {
     features: [
       { icon: MessageCircle, label: "채팅", available: true },
       { icon: Phone, label: "음성 통화", available: true },
@@ -60,17 +48,7 @@ const CREATORS = [
       { name: "VIP", price: "₩24,900/월", features: ["기본 포함", "영상 통화", "독점 콘텐츠", "우선 응답"] },
     ],
   },
-  {
-    id: 3,
-    img: "https://d2xsxph8kpxj0f.cloudfront.net/310519663373200888/momaTHZCdn4B5vKDmtkdXn/creator-profile-3-DP5xTQFjnZwKdq5wZNkrHC.webp",
-    name: "Sophia",
-    price: "₩14,900/월",
-    category: "VIP",
-    rating: 4.95,
-    reviews: 2103,
-    description:
-      "Sophia입니다. 성인 전용 프리미엄 AI 파트너로, 당신의 모든 욕구와 판타지를 충족시켜드립니다. 완전한 프라이버시와 함께 특별한 경험을 선사합니다.",
-    tags: ["VIP", "성인", "프리미엄", "독점"],
+  3: {
     features: [
       { icon: MessageCircle, label: "채팅", available: true },
       { icon: Phone, label: "음성 통화", available: true },
@@ -78,25 +56,11 @@ const CREATORS = [
       { icon: Heart, label: "성인 콘텐츠", available: true },
     ],
     plans: [
-      { name: "기본", price: "₩14,900/월", features: ["무제한 채팅", "음성 통화", "성인 채팅"] },
-      {
-        name: "VIP",
-        price: "₩29,900/월",
-        features: ["기본 포함", "영상 통화", "성인 영상", "독점 콘텐츠", "팬미팅 우선권"],
-      },
+      { name: "기본", price: "₩14,900/월", features: ["무제한 채팅", "음성 통화", "프로필 사진"] },
+      { name: "VIP 플래티넘", price: "₩29,900/월", features: ["기본 포함", "영상 통화", "성인 채팅", "독점 콘텐츠"] },
     ],
   },
-  {
-    id: 4,
-    img: "https://d2xsxph8kpxj0f.cloudfront.net/310519663373200888/momaTHZCdn4B5vKDmtkdXn/creator-profile-4-mXFdyb5gxiBMRNTpqDjcvC.webp",
-    name: "James",
-    price: "₩11,900/월",
-    category: "소통 & 데이팅",
-    rating: 4.7,
-    reviews: 634,
-    description:
-      "안녕하세요, James입니다. 유머 감각과 따뜻함을 겸비한 AI 파트너예요. 함께 웃고, 이야기하며 특별한 시간을 보내요.",
-    tags: ["소통", "유머", "따뜻함", "데이팅"],
+  4: {
     features: [
       { icon: MessageCircle, label: "채팅", available: true },
       { icon: Phone, label: "음성 통화", available: true },
@@ -105,19 +69,52 @@ const CREATORS = [
     ],
     plans: [
       { name: "기본", price: "₩11,900/월", features: ["무제한 채팅", "음성 메시지", "프로필 사진"] },
-      { name: "프리미엄", price: "₩21,900/월", features: ["기본 포함", "음성 통화", "독점 콘텐츠"] },
+      { name: "프리미엄", price: "₩22,900/월", features: ["기본 포함", "음성 통화", "독점 콘텐츠"] },
     ],
   },
-];
+};
+
+const DEFAULT_EXTRAS = {
+  features: [
+    { icon: MessageCircle, label: "채팅", available: true },
+    { icon: Phone, label: "음성 통화", available: false },
+    { icon: Video, label: "영상 통화", available: false },
+    { icon: Heart, label: "성인 콘텐츠", available: false },
+  ],
+  plans: [
+    { name: "기본", price: "₩9,900/월", features: ["무제한 채팅", "프로필 사진"] },
+    { name: "프리미엄", price: "₩19,900/월", features: ["기본 포함", "독점 콘텐츠"] },
+  ],
+};
 
 export default function CreatorDetail() {
   const { id } = useParams<{ id: string }>();
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, loading: authLoading } = useAuth();
+  const [subscribeModal, setSubscribeModal] = useState<{ open: boolean; plan: { name: string; price: string; features: string[] } | null }>({
+    open: false,
+    plan: null,
+  });
 
   const creatorId = parseInt(id || "1");
-  const creator = CREATORS.find((c) => c.id === creatorId);
 
-  if (!creator) {
+  // Fetch from DB via tRPC
+  const { data: creator, isLoading, error } = trpc.creators.getById.useQuery(
+    { id: creatorId },
+    { retry: false }
+  );
+
+  // Fetch all creators for "other creators" section
+  const { data: allCreators } = trpc.creators.list.useQuery();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-slate-950 via-red-950 to-slate-950 text-white flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-red-400" />
+      </div>
+    );
+  }
+
+  if (error || !creator) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-slate-950 via-red-950 to-slate-950 text-white flex items-center justify-center">
         <div className="text-center">
@@ -133,6 +130,13 @@ export default function CreatorDetail() {
     );
   }
 
+  const extras = CREATOR_EXTRAS[creator.id] || DEFAULT_EXTRAS;
+  const tags: string[] = (() => {
+    try { return JSON.parse(creator.tags || "[]"); } catch { return []; }
+  })();
+  const rating = parseFloat(creator.rating || "4.5");
+  const reviewCount = creator.reviewCount || 0;
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-red-950 to-slate-950 text-white">
       {/* Navigation */}
@@ -147,7 +151,7 @@ export default function CreatorDetail() {
           <span className="text-xl font-bold bg-gradient-to-r from-red-400 to-pink-400 bg-clip-text text-transparent">
             OohX.ai
           </span>
-          {!loading && !isAuthenticated && (
+          {!authLoading && !isAuthenticated && (
             <Button
               onClick={() => (window.location.href = getLoginUrl())}
               className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 border-0 text-sm"
@@ -168,14 +172,14 @@ export default function CreatorDetail() {
             <div className="relative">
               <div className="relative overflow-hidden rounded-2xl">
                 <img
-                  src={creator.img}
+                  src={creator.imageUrl}
                   alt={creator.name}
                   className="w-full aspect-[3/4] object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                 <div className="absolute bottom-4 left-4 right-4">
                   <span className="px-3 py-1 rounded-full bg-red-600/80 text-white text-xs font-medium">
-                    {creator.category}
+                    {creator.category || "AI 파트너"}
                   </span>
                 </div>
               </div>
@@ -196,32 +200,36 @@ export default function CreatorDetail() {
                   {[1, 2, 3, 4, 5].map((star) => (
                     <Star
                       key={star}
-                      className={`w-4 h-4 ${star <= Math.floor(creator.rating) ? "text-yellow-400 fill-yellow-400" : "text-gray-600"}`}
+                      className={`w-4 h-4 ${star <= Math.floor(rating) ? "text-yellow-400 fill-yellow-400" : "text-gray-600"}`}
                     />
                   ))}
                 </div>
-                <span className="text-yellow-400 font-bold">{creator.rating}</span>
-                <span className="text-gray-400 text-sm">({creator.reviews.toLocaleString()}개 리뷰)</span>
+                <span className="text-yellow-400 font-bold">{rating}</span>
+                <span className="text-gray-400 text-sm">({reviewCount.toLocaleString()}개 리뷰)</span>
               </div>
 
               {/* Description */}
-              <p className="text-gray-300 text-lg leading-relaxed mb-6">{creator.description}</p>
+              <p className="text-gray-300 text-lg leading-relaxed mb-6">
+                {creator.description || "AI 파트너와 특별한 대화를 나눠보세요."}
+              </p>
 
               {/* Tags */}
-              <div className="flex flex-wrap gap-2 mb-6">
-                {creator.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="px-3 py-1 rounded-full bg-red-900/20 border border-red-500/30 text-red-300 text-sm"
-                  >
-                    #{tag}
-                  </span>
-                ))}
-              </div>
+              {tags.length > 0 && (
+                <div className="flex flex-wrap gap-2 mb-6">
+                  {tags.map((tag: string) => (
+                    <span
+                      key={tag}
+                      className="px-3 py-1 rounded-full bg-red-900/20 border border-red-500/30 text-red-300 text-sm"
+                    >
+                      #{tag}
+                    </span>
+                  ))}
+                </div>
+              )}
 
               {/* Features */}
               <div className="grid grid-cols-2 gap-3 mb-8">
-                {creator.features.map((feature) => (
+                {extras.features.map((feature) => (
                   <div
                     key={feature.label}
                     className={`flex items-center gap-2 p-3 rounded-lg border ${
@@ -245,10 +253,12 @@ export default function CreatorDetail() {
 
               {/* CTA */}
               {isAuthenticated ? (
-                <Button className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 border-0 py-6 text-lg">
-                  <MessageCircle className="w-5 h-5 mr-2" />
-                  대화 시작하기
-                </Button>
+                <Link href={`/chat/${id}`}>
+                  <Button className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 border-0 py-6 text-lg">
+                    <MessageCircle className="w-5 h-5 mr-2" />
+                    대화 시작하기
+                  </Button>
+                </Link>
               ) : (
                 <div className="space-y-3">
                   <Button
@@ -279,7 +289,7 @@ export default function CreatorDetail() {
           </h2>
 
           <div className="grid md:grid-cols-2 gap-6">
-            {creator.plans.map((plan, idx) => (
+            {extras.plans.map((plan, idx) => (
               <div
                 key={plan.name}
                 className={`p-6 rounded-xl border transition ${
@@ -307,6 +317,7 @@ export default function CreatorDetail() {
                 </ul>
                 {isAuthenticated ? (
                   <Button
+                    onClick={() => setSubscribeModal({ open: true, plan })}
                     className={`w-full border-0 ${
                       idx === 1
                         ? "bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800"
@@ -332,30 +343,43 @@ export default function CreatorDetail() {
       </section>
 
       {/* Other Creators */}
-      <section className="py-16 px-4">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-2xl font-bold mb-8">다른 크리에이터도 만나보세요</h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {CREATORS.filter((c) => c.id !== creator.id)
-              .slice(0, 3)
-              .map((c) => (
-                <Link key={c.id} href={`/creator/${c.id}`}>
-                  <div className="group relative overflow-hidden rounded-xl cursor-pointer">
-                    <img
-                      src={c.img}
-                      alt={c.name}
-                      className="w-full h-48 object-cover group-hover:scale-110 transition duration-300"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-3">
-                      <h3 className="font-bold">{c.name}</h3>
-                      <p className="text-red-400 text-xs">{c.price}</p>
+      {allCreators && allCreators.length > 1 && (
+        <section className="py-16 px-4">
+          <div className="max-w-6xl mx-auto">
+            <h2 className="text-2xl font-bold mb-8">다른 크리에이터도 만나보세요</h2>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              {allCreators
+                .filter((c) => c.id !== creator.id)
+                .slice(0, 3)
+                .map((c) => (
+                  <Link key={c.id} href={`/creator/${c.id}`}>
+                    <div className="group relative overflow-hidden rounded-xl cursor-pointer">
+                      <img
+                        src={c.imageUrl}
+                        alt={c.name}
+                        className="w-full h-48 object-cover group-hover:scale-110 transition duration-300"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-3">
+                        <h3 className="font-bold">{c.name}</h3>
+                        <p className="text-red-400 text-xs">{c.price}</p>
+                      </div>
                     </div>
-                  </div>
-                </Link>
-              ))}
+                  </Link>
+                ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
+
+      {/* Subscribe Modal */}
+      {subscribeModal.plan && (
+        <SubscribeModal
+          isOpen={subscribeModal.open}
+          onClose={() => setSubscribeModal({ open: false, plan: null })}
+          creatorName={creator.name}
+          plan={subscribeModal.plan}
+        />
+      )}
 
       {/* Footer */}
       <footer className="py-8 px-4 border-t border-red-500/30 bg-black/50 text-center text-sm text-gray-500">

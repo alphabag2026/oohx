@@ -1,6 +1,10 @@
-import { eq } from "drizzle-orm";
+import { eq, desc, and } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users, creators, InsertCreator } from "../drizzle/schema";
+import {
+  InsertUser, users, creators, InsertCreator,
+  chatSessions, chatMessages, generatedImages,
+  InsertChatSession, InsertChatMessage, InsertGeneratedImage
+} from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -132,4 +136,70 @@ export async function upsertCreator(creator: InsertCreator): Promise<void> {
       isActive: creator.isActive,
     },
   });
+}
+
+export async function deleteCreator(id: number): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+  await db.delete(creators).where(eq(creators.id, id));
+}
+
+// ============ Chat Sessions ============
+
+export async function getOrCreateChatSession(userId: number, creatorId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const existing = await db.select().from(chatSessions)
+    .where(and(eq(chatSessions.userId, userId), eq(chatSessions.creatorId, creatorId)))
+    .limit(1);
+
+  if (existing.length > 0) return existing[0];
+
+  const result = await db.insert(chatSessions).values({ userId, creatorId });
+  const newSession = await db.select().from(chatSessions)
+    .where(eq(chatSessions.id, Number(result[0].insertId)))
+    .limit(1);
+  return newSession[0];
+}
+
+export async function getChatMessages(sessionId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(chatMessages)
+    .where(eq(chatMessages.sessionId, sessionId))
+    .orderBy(chatMessages.createdAt);
+}
+
+export async function saveChatMessage(msg: InsertChatMessage) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.insert(chatMessages).values(msg);
+}
+
+// ============ Generated Images ============
+
+export async function saveGeneratedImage(img: InsertGeneratedImage) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(generatedImages).values(img);
+  return Number(result[0].insertId);
+}
+
+export async function getUserGeneratedImages(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(generatedImages)
+    .where(eq(generatedImages.userId, userId))
+    .orderBy(desc(generatedImages.createdAt))
+    .limit(50);
+}
+
+export async function getPublicGallery(limit = 20) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(generatedImages)
+    .where(eq(generatedImages.isPublic, true))
+    .orderBy(desc(generatedImages.createdAt))
+    .limit(limit);
 }

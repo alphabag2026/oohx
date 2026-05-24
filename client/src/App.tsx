@@ -7,6 +7,10 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
 import CreatorDetail from "./pages/CreatorDetail";
 import AIGenerate from "./pages/AIGenerate";
+import Chat from "./pages/Chat";
+import MyPage from "./pages/MyPage";
+import Explore from "./pages/Explore";
+import AdminCreators from "./pages/AdminCreators";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -15,6 +19,10 @@ function Router() {
       <Route path={"/"} component={Home} />
       <Route path={"/creator/:id"} component={CreatorDetail} />
       <Route path={"/ai-generate"} component={AIGenerate} />
+      <Route path={"/chat/:id"} component={Chat} />
+      <Route path={"/my"} component={MyPage} />
+      <Route path={"/explore"} component={Explore} />
+      <Route path={"/admin/creators"} component={AdminCreators} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />
