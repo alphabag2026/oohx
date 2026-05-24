@@ -15,9 +15,10 @@ export default function ShareImageModal({ isOpen, onClose, imageUrl, prompt }: S
   if (!isOpen) return null;
 
   const shareText = prompt
-    ? `OohX.ai에서 AI로 생성한 이미지: "${prompt.slice(0, 50)}..." 🔥`
-    : "OohX.ai에서 AI로 생성한 이미지 🔥";
-  const shareUrl = "https://oohx.ai/ai-generate";
+    ? `OohX.ai에서 AI로 생성한 이미지: "${prompt.slice(0, 50)}${prompt.length > 50 ? '...' : ''}" 🔥 #OohX #AIArt`
+    : "OohX.ai에서 AI로 생성한 이미지 🔥 #OohX #AIArt";
+  // data URL이면 ai-generate 페이지, 외부 URL이면 이미지 직접 링크
+  const shareUrl = imageUrl.startsWith('data:') ? "https://oohx.ai/ai-generate" : imageUrl;
 
   const handleTwitterShare = () => {
     const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;

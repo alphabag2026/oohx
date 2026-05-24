@@ -21,6 +21,7 @@ function Router() {
       <Route path={"/ai-generate"} component={AIGenerate} />
       <Route path={"/chat/:id"} component={Chat} />
       <Route path={"/my"} component={MyPage} />
+      <Route path={"/mypage"} component={MyPage} />
       <Route path={"/explore"} component={Explore} />
       <Route path={"/admin/creators"} component={AdminCreators} />
       <Route path={"/404"} component={NotFound} />

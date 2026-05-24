@@ -5,7 +5,7 @@ import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
 import {
-  getCreators, getCreatorById, upsertCreator, deleteCreator,
+  getCreators, getAllCreators, getCreatorById, upsertCreator, deleteCreator,
   getOrCreateChatSession, getChatMessages, saveChatMessage,
   saveGeneratedImage, getUserGeneratedImages, getPublicGallery,
 } from "./db";
@@ -56,6 +56,12 @@ export const appRouter = router({
         });
         return { success: true };
       }),
+
+    // Admin: list all creators (including inactive)
+    listAll: protectedProcedure.query(async ({ ctx }) => {
+      if (ctx.user.role !== "admin") throw new TRPCError({ code: "FORBIDDEN" });
+      return getAllCreators();
+    }),
 
     // Admin: delete creator
     delete: protectedProcedure

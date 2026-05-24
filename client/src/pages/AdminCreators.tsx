@@ -35,11 +35,14 @@ export default function AdminCreators() {
   const [showForm, setShowForm] = useState(false);
 
   const utils = trpc.useUtils();
-  const { data: creators, isLoading } = trpc.creators.list.useQuery();
+  const { data: creators, isLoading } = trpc.creators.listAll.useQuery(undefined, {
+    enabled: isAuthenticated && user?.role === 'admin',
+  });
 
   const upsertMutation = trpc.creators.upsert.useMutation({
     onSuccess: () => {
       toast.success(editingCreator?.id ? "크리에이터가 수정되었습니다" : "크리에이터가 추가되었습니다");
+      utils.creators.listAll.invalidate();
       utils.creators.list.invalidate();
       setShowForm(false);
       setEditingCreator(null);
@@ -50,6 +53,7 @@ export default function AdminCreators() {
   const deleteMutation = trpc.creators.delete.useMutation({
     onSuccess: () => {
       toast.success("크리에이터가 삭제되었습니다");
+      utils.creators.listAll.invalidate();
       utils.creators.list.invalidate();
     },
     onError: (err) => toast.error(err.message),

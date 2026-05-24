@@ -48,6 +48,7 @@ export default function AIGenerate() {
   const [gemsRemaining, setGemsRemaining] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [shareModalOpen, setShareModalOpen] = useState(false);
+  const [isPublic, setIsPublic] = useState(false);
 
   const generateMutation = trpc.ai.generateImage.useMutation({
     onSuccess: (data) => {
@@ -72,6 +73,7 @@ export default function AIGenerate() {
       image_size: imageSize as "512x512" | "512x768" | "768x512",
       negative_prompt: negativePrompt,
       age_slider: ageSlider,
+      isPublic,
     });
   };
 
@@ -278,6 +280,24 @@ export default function AIGenerate() {
                   onChange={(e) => setNegativePrompt(e.target.value)}
                   className="w-full bg-black/40 border border-red-900/40 rounded-lg px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-red-500/60 text-sm"
                 />
+              </div>
+
+              {/* Public Toggle */}
+              <div className="p-4 rounded-xl bg-black/40 border border-red-900/30 flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-red-300">갤러리에 공개</p>
+                  <p className="text-xs text-gray-500 mt-0.5">ON 시 탐색 페이지에 공개됩니다</p>
+                </div>
+                <button
+                  onClick={() => setIsPublic(!isPublic)}
+                  className={`relative w-12 h-6 rounded-full transition-colors ${
+                    isPublic ? 'bg-red-600' : 'bg-gray-700'
+                  }`}
+                >
+                  <span className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform ${
+                    isPublic ? 'translate-x-6' : 'translate-x-0'
+                  }`} />
+                </button>
               </div>
 
               {/* Generate Button */}

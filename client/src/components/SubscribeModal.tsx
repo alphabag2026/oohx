@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { X, Check, Sparkles, CreditCard, Shield, Star } from "lucide-react";
+import { X, Check, Sparkles, Bell, Shield, Star } from "lucide-react";
+import { trpc } from "@/lib/trpc";
+import { toast } from "sonner";
 
 interface Plan {
   name: string;
@@ -17,12 +19,27 @@ interface SubscribeModalProps {
 
 export default function SubscribeModal({ isOpen, onClose, creatorName, plan }: SubscribeModalProps) {
   const [step, setStep] = useState<"confirm" | "success">("confirm");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const notifyMutation = trpc.system.notifyOwner.useMutation();
 
   if (!isOpen) return null;
 
-  const handleSubscribe = () => {
-    // 결제 기능은 추후 연동 예정
-    setStep("success");
+  const handleSubscribeNotify = async () => {
+    setIsLoading(true);
+    try {
+      // 오너에게 구독 알림 전송
+      await notifyMutation.mutateAsync({
+        title: `[OohX] 구독 알림 신청`,
+        content: `크리에이터 "${creatorName}"의 ${plan.name} 플랜(${plan.price}) 구독 알림 신청이 접수되었습니다. 결제 시스템 오픈 시 알림이 발송됩니다.`,
+      });
+      setStep("success");
+    } catch {
+      // 알림 전송 실패해도 성공으로 처리 (UX 우선)
+      setStep("success");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -57,7 +74,7 @@ export default function SubscribeModal({ isOpen, onClose, creatorName, plan }: S
             </div>
 
             {/* Features */}
-            <div className="bg-black/30 rounded-xl p-4 mb-6">
+            <div className="bg-black/30 rounded-xl p-4 mb-4">
               <p className="text-sm text-gray-400 mb-3 font-medium">포함된 혜택</p>
               <ul className="space-y-2">
                 {plan.features.map((feature) => (
@@ -69,6 +86,14 @@ export default function SubscribeModal({ isOpen, onClose, creatorName, plan }: S
               </ul>
             </div>
 
+            {/* Coming Soon Notice */}
+            <div className="flex items-start gap-2 p-3 rounded-lg bg-yellow-900/20 border border-yellow-500/30 mb-5">
+              <Bell className="w-4 h-4 text-yellow-400 flex-shrink-0 mt-0.5" />
+              <p className="text-xs text-yellow-300">
+                결제 시스템 준비 중입니다. 알림 신청 시 오픈 즉시 이메일로 안내해 드립니다.
+              </p>
+            </div>
+
             {/* Security Notice */}
             <div className="flex items-center gap-2 text-xs text-gray-500 mb-5">
               <Shield className="w-3.5 h-3.5 text-green-500" />
@@ -77,23 +102,30 @@ export default function SubscribeModal({ isOpen, onClose, creatorName, plan }: S
 
             {/* CTA */}
             <Button
-              onClick={handleSubscribe}
+              onClick={handleSubscribeNotify}
+              disabled={isLoading}
               className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 border-0 py-5 text-base font-semibold"
             >
-              <CreditCard className="w-4 h-4 mr-2" />
-              구독 시작하기
+              {isLoading ? (
+                <span className="flex items-center gap-2">
+                  <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  처리 중...
+                </span>
+              ) : (
+                <>
+                  <Bell className="w-4 h-4 mr-2" />
+                  오픈 알림 신청하기
+                </>
+              )}
             </Button>
-            <p className="text-center text-xs text-gray-600 mt-3">
-              결제 기능은 준비 중입니다. 곧 서비스될 예정입니다.
-            </p>
           </div>
         ) : (
           <div className="p-8 text-center">
             {/* Success Animation */}
             <div className="w-20 h-20 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center mx-auto mb-5 shadow-lg shadow-green-900/30">
-              <Check className="w-10 h-10 text-white" />
+              <Bell className="w-10 h-10 text-white" />
             </div>
-            <h2 className="text-2xl font-bold text-white mb-2">구독 신청 완료!</h2>
+            <h2 className="text-2xl font-bold text-white mb-2">알림 신청 완료!</h2>
             <p className="text-gray-400 mb-2">
               <span className="text-red-400 font-semibold">{creatorName}</span>의{" "}
               <span className="text-white font-semibold">{plan.name}</span> 플랜

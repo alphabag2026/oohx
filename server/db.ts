@@ -105,6 +105,15 @@ export async function getCreators() {
   return db.select().from(creators).where(eq(creators.isActive, true));
 }
 
+export async function getAllCreators() {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot get creators: database not available");
+    return [];
+  }
+  return db.select().from(creators).orderBy(creators.id);
+}
+
 export async function getCreatorById(id: number) {
   const db = await getDb();
   if (!db) {
